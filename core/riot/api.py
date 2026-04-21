@@ -1,18 +1,19 @@
 from __future__ import annotations
 
-import os
 from urllib.parse import quote
 
 import httpx
 
+from apps.bot.utils.env import get_env
+
 
 def _get_env() -> tuple[str, str, str]:
-    api_key = os.getenv("RIOT_API_KEY")
-    region = os.getenv("RIOT_REGION", "americas")
-    platform = os.getenv("RIOT_PLATFORM", "na1")
+    api_key = get_env("RIOT_API_KEY")
+    region = get_env("RIOT_REGION", "americas") or "americas"
+    platform = get_env("RIOT_PLATFORM", "na1") or "na1"
 
     if not api_key:
-        raise RuntimeError("RIOT_API_KEY is missing in .env")
+        raise RuntimeError("RIOT_API_KEY is missing (set RIOT_API_KEY or a supported secret alias)")
 
     return api_key, region, platform
 

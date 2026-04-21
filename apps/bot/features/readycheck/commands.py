@@ -2,6 +2,7 @@ import discord
 from discord import Interaction, app_commands
 from discord.ext import commands
 
+from apps.bot.utils.env import get_env
 from apps.bot.features.readycheck.service import (
     all_ready,
     clear_ready_check,
@@ -130,9 +131,8 @@ class ReadyCheck(commands.Cog):
         red_vc_id = None
 
         try:
-            import os
-            blue_vc_id = int(os.getenv("BLUE_VC_ID", "0"))
-            red_vc_id = int(os.getenv("RED_VC_ID", "0"))
+            blue_vc_id = int(get_env("BLUE_VC_ID", "0") or "0")
+            red_vc_id = int(get_env("RED_VC_ID", "0") or "0")
         except ValueError:
             blue_vc_id = 0
             red_vc_id = 0

@@ -1,8 +1,9 @@
-import os
 from pathlib import Path
 
 import discord
 from discord.ext import commands
+
+from apps.bot.utils.env import get_env
 
 
 class LeagueBot(commands.Bot):
@@ -18,7 +19,7 @@ class LeagueBot(commands.Bot):
             help_command=None,
         )
 
-        self.guild_id = int(os.getenv("DISCORD_GUILD_ID", "0"))
+        self.guild_id = int(get_env("DISCORD_GUILD_ID", "0") or "0")
         self.initial_extensions = self._discover_extensions()
 
     def _discover_extensions(self) -> list[str]:

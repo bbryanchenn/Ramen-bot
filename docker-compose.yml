@@ -17,7 +17,7 @@ services:
   bot:
     build: .
     container_name: league_bot
-    command: python apps/bot/main.py
+    command: python -m apps.bot.main
     volumes:
       - .:/app
     env_file:

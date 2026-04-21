@@ -1,0 +1,22 @@
+# API
+fastapi
+uvicorn[standard]
+
+# DB
+sqlalchemy
+psycopg2-binary
+
+# Discord
+discord.py
+
+# HTTP client
+httpx
+
+# Env
+python-dotenv
+
+# Utils
+pydantic
+
+# Optional (recommended later)
+redis

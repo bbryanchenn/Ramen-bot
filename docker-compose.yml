@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: league_api
+    command: uvicorn apps.api.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  bot:
+    build: .
+    container_name: league_bot
+    command: python apps/bot/main.py
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - api
+
+  db:
+    image: postgres:15
+    container_name: league_db
+    restart: always
+    environment:
+      POSTGRES_USER: leaguebot
+      POSTGRES_PASSWORD: leaguebot
+      POSTGRES_DB: leaguebot
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: league_redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata:

@@ -1,0 +1,44 @@
+import discord
+from discord import Interaction, app_commands
+from discord.ext import commands
+
+from apps.bot.features.titles.service import get_equipped_title_name, get_user_titles
+from apps.bot.features.titles.views import TitleShopView, build_title_embed
+
+
+class Titles(commands.Cog):
+    def __init__(self, bot: commands.Bot) -> None:
+        self.bot = bot
+
+    @app_commands.command(name="title", description="Open the title shop")
+    async def title(self, interaction: Interaction) -> None:
+        embed = build_title_embed(interaction.user.id)
+        view = TitleShopView(interaction.user.id)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+    @app_commands.command(name="mytitle", description="Show your equipped title")
+    async def mytitle(self, interaction: Interaction) -> None:
+        title = get_equipped_title_name(interaction.user.id)
+        if not title:
+            await interaction.response.send_message("You have no equipped title.", ephemeral=True)
+            return
+
+        await interaction.response.send_message(f"Equipped title: **{title}**", ephemeral=True)
+
+    @app_commands.command(name="mytitle", description="Show your equipped title")
+    async def mytitle(self, interaction: Interaction) -> None:
+        title = get_equipped_title_name(interaction.user.id)
+        if not title:
+            await interaction.response.send_message("You have no equipped title.", ephemeral=True)
+            return
+
+        embed = discord.Embed(
+            title="🏷️ Equipped Title",
+            description=f"**{title}**",
+            color=discord.Color.purple(),
+        )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(Titles(bot))

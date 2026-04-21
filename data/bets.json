@@ -1,0 +1,52 @@
+{
+  "balances": {
+    "444188728500551690": 1000,
+    "514558534273335303": 1000,
+    "792207580456812554": 1000
+  },
+  "stats": {
+    "444188728500551690": {
+      "profit": 0,
+      "total_bet": 0,
+      "bets_placed": 0,
+      "wins": 2,
+      "losses": 1,
+      "biggest_win": 0,
+      "biggest_loss": 0
+    },
+    "514558534273335303": {
+      "profit": 0,
+      "total_bet": 0,
+      "bets_placed": 0,
+      "wins": 0,
+      "losses": 0,
+      "biggest_win": 0,
+      "biggest_loss": 0
+    },
+    "792207580456812554": {
+      "profit": 0,
+      "total_bet": 0,
+      "bets_placed": 0,
+      "wins": 0,
+      "losses": 0,
+      "biggest_win": 0,
+      "biggest_loss": 0
+    }
+  },
+  "current_bets": {
+    "blue": {},
+    "red": {}
+  },
+  "insurance": {},
+  "current_match": {
+    "blue_team": [
+      867754044843098143,
+      514558534273335303
+    ],
+    "red_team": [
+      792207580456812554,
+      444188728500551690
+    ],
+    "bets_locked": false
+  }
+}

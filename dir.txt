@@ -1,0 +1,55 @@
+ramen-bot/
+│
+├── apps/
+│   ├── bot/
+│   │   ├── main.py
+│   │   ├── client.py
+│   │   ├── commands/
+│   │   │   ├── lobby.py
+│   │   │   ├── teams.py
+│   │   │   ├── mmr.py
+│   │   │   └── settings.py
+│   │   ├── views/
+│   │   │   ├── signup_view.py
+│   │   │   └── confirm_view.py
+│   │   └── utils/
+│   │       ├── guild_parser.py
+│   │       └── embeds.py
+│   │
+│   └── api/
+│       ├── main.py
+│       ├── routes/
+│       │   ├── lobby.py
+│       │   ├── teams.py
+│       │   └── players.py
+│       ├── services/
+│       │   ├── discord_service.py
+│       │   ├── riot_service.py
+│       │   └── balance_service.py
+│       └── db/
+│           ├── base.py
+│           └── session.py
+│
+├── core/
+│   ├── models/
+│   │   ├── player.py
+│   │   ├── team.py
+│   │   └── lobby.py
+│   ├── balance/
+│   │   ├── mmr.py
+│   │   ├── roles.py
+│   │   ├── sampler.py
+│   │   └── optimizer.py
+│   └── constants.py
+│
+├── data/
+│   └── rank_values.json
+│
+├── tests/
+│   ├── test_balance.py
+│   ├── test_roles.py
+│   └── test_optimizer.py
+│
+├── .env
+├── requirements.txt
+└── README.md

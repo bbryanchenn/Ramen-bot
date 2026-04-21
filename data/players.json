@@ -1,0 +1,86 @@
+{
+  "444188728500551690": {
+    "id": 444188728500551690,
+    "name": "NING NING",
+    "roles": [
+      "JUNGLE"
+    ],
+    "mmr": 200,
+    "riot_id": "\uc9c4\uc900\ud601#LYFE",
+    "puuid": "SYadDIV2haOmg3R5XcLVBVh2VkjEB7MZVozX33sn7IXoJZTKS9wlUibbEFhgyL_WoxkHCW9ut1XBHA",
+    "summoner_id": null,
+    "ranked_entry": {
+      "queueType": "MANUAL",
+      "tier": "BRONZE",
+      "rank": "IV",
+      "leaguePoints": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "manual_rank": true,
+    "in_lobby": true
+  },
+  "792207580456812554": {
+    "id": 792207580456812554,
+    "name": "Fizzish",
+    "roles": [
+      "JUNGLE"
+    ],
+    "mmr": 600,
+    "riot_id": "Fizzish#NA1",
+    "puuid": "gQlZ0Sxc5kFO1dXXze8cE_KLufVltxQVuV96tR2Vz8ohhlVw93LWr_1g2SOOkiadH7HeqcExO9ha_Q",
+    "summoner_id": null,
+    "ranked_entry": {
+      "queueType": "MANUAL",
+      "tier": "EMERALD",
+      "rank": "IV",
+      "leaguePoints": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "manual_rank": true,
+    "in_lobby": true
+  },
+  "514558534273335303": {
+    "id": 514558534273335303,
+    "name": "Ramenboi",
+    "roles": [
+      "MID"
+    ],
+    "mmr": 375,
+    "riot_id": "Ramenboi25#5144",
+    "puuid": "HmqTxw2UHmgtq2Np1hka0GH0i-hMOEb9GGjE4FnwN08VzLixT_7M5s6HJVrlvjyJQbYyGyylMB6-BA",
+    "summoner_id": null,
+    "ranked_entry": {
+      "queueType": "MANUAL",
+      "tier": "SILVER",
+      "rank": "I",
+      "leaguePoints": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "manual_rank": true,
+    "in_lobby": true
+  },
+  "867754044843098143": {
+    "id": 867754044843098143,
+    "name": "Ken",
+    "roles": [
+      "TOP"
+    ],
+    "mmr": 875,
+    "riot_id": "Iuno#Baka",
+    "puuid": "ai1iM0FbZmifSBUDLV26zwyl7v2sARHJE2fDYpqgG9PIkSca74Ud7RKZ5gstnAT0l4iAykbFIe45hA",
+    "summoner_id": null,
+    "ranked_entry": {
+      "queueType": "MANUAL",
+      "tier": "MASTER",
+      "rank": "I",
+      "leaguePoints": 0,
+      "wins": 0,
+      "losses": 0
+    },
+    "manual_rank": true,
+    "in_lobby": true
+  }
+}

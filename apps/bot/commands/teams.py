@@ -3,7 +3,6 @@ from discord import Interaction, app_commands
 from discord.ext import commands
 
 from apps.bot.features.betting.service import load_bets, save_bets
-from core.builder.optimizer import build_best_lobby
 from core.builder.roles import LANES
 
 
@@ -36,103 +35,82 @@ class Teams(commands.Cog):
             lines.append(f"**{player['name']}** ({player.get('mmr', 500)})")
         return "\n".join(lines)
 
-    @app_commands.command(name="teams", description="Generate balanced teams from the current lobby")
-    @app_commands.describe(team_count="Number of teams to build")
-    async def teams(self, interaction: Interaction, team_count: int = 2) -> None:
+    @app_commands.command(name="teams", description="Form teams from players who joined /joinblue and /joinred")
+    async def teams(self, interaction: Interaction) -> None:
         lobby_cog = self.bot.get_cog("Lobby")
         if lobby_cog is None:
             await interaction.response.send_message("Lobby system is not loaded.", ephemeral=True)
             return
 
-        raw_players = [p for p in lobby_cog.players.values() if p.get("in_lobby", False)]
-        if not raw_players:
-            await interaction.response.send_message("Lobby is empty.", ephemeral=True)
-            return
+        state = load_bets()
+        state.setdefault("current_match", {"blue_team": [], "red_team": [], "bets_locked": False})
+        
+        blue_team_ids = state["current_match"].get("blue_team", [])
+        red_team_ids = state["current_match"].get("red_team", [])
 
-        if team_count not in (2, 3):
-            await interaction.response.send_message("Only 2 or 3 teams are supported.", ephemeral=True)
+        if not blue_team_ids and not red_team_ids:
+            await interaction.response.send_message(
+                "No teams assigned. Use `/joinblue` or `/joinred` to assign players to teams.",
+                ephemeral=True,
+            )
             return
-
-        players = []
-        for player in raw_players:
-            players.append({
-                "id": player["id"],
-                "name": player["name"],
-                "roles": [role.upper() for role in player.get("roles", [])],
-                "mmr": player.get("mmr", 500),
-                "riot_id": player.get("riot_id"),
-                "manual_rank": player.get("manual_rank", False),
-            })
 
         await interaction.response.defer()
 
-        small_lobby_mode = len(players) < 10
-        if small_lobby_mode:
-            sorted_players = sorted(players, key=lambda p: p.get("mmr", 500), reverse=True)
-            blue_team = {}
-            red_team = {}
+        # Build team dicts with players from lobby
+        blue_team = {}
+        red_team = {}
 
-            for index, player in enumerate(sorted_players):
-                slot = f"P{(index // 2) + 1}"
-                if index % 2 == 0:
-                    blue_team[slot] = player
-                else:
-                    red_team[slot] = player
+        for user_id in blue_team_ids:
+            player = lobby_cog.players.get(user_id)
+            if player:
+                blue_team[f"P{len(blue_team) + 1}"] = {
+                    "id": player["id"],
+                    "name": player["name"],
+                    "roles": player.get("roles", []),
+                    "mmr": player.get("mmr", 500),
+                }
 
-            result = {
-                "teams": [blue_team, red_team],
-                "mode": 2,
-                "score": None,
-            }
-        else:
-            result = build_best_lobby(players, team_count=team_count)
-            if result is None:
-                await interaction.followup.send(
-                    "Could not build valid teams. Make sure the lobby has enough lane coverage.",
-                    ephemeral=True,
-                )
-                return
+        for user_id in red_team_ids:
+            player = lobby_cog.players.get(user_id)
+            if player:
+                red_team[f"P{len(red_team) + 1}"] = {
+                    "id": player["id"],
+                    "name": player["name"],
+                    "roles": player.get("roles", []),
+                    "mmr": player.get("mmr", 500),
+                }
 
-        self.last_result = result
-
-        teams = result["teams"]
-        bench = result.get("bench", [])
-        score = result.get("score")
-
-        state = load_bets()
-        state.setdefault("current_match", {"blue_team": [], "red_team": [], "bets_locked": False})
-        state["current_match"].setdefault("bets_locked", False)
-        state["current_match"]["blue_team"] = [int(player["id"]) for player in teams[0].values()]
-        state["current_match"]["red_team"] = [int(player["id"]) for player in teams[1].values()]
+        teams = [blue_team, red_team]
         save_bets(state)
 
         embed = discord.Embed(
-            title="🧩 Teams Generated",
+            title="🧩 Teams Set",
             color=discord.Color.blurple(),
         )
 
         for i, team in enumerate(teams, start=1):
-            side_label = "Blue Side" if i == 1 else "Red Side" if i == 2 else f"Team {i}"
-            embed.add_field(
-                name=f"{side_label} ({len(team)} players)",
-                value=self._format_team(team, i),
-                inline=False,
-            )
-
-        bench_block = self._format_bench(bench)
-        if bench_block:
-            embed.add_field(name="Bench", value=bench_block, inline=False)
-
-        if score is not None:
-            embed.add_field(name="Balance Score", value=str(score), inline=False)
+            side_label = "Blue Side" if i == 1 else "Red Side"
+            if team:
+                embed.add_field(
+                    name=f"{side_label} ({len(team)} players)",
+                    value=self._format_team(team, i),
+                    inline=False,
+                )
+            else:
+                embed.add_field(
+                    name=f"{side_label}",
+                    value="Empty",
+                    inline=False,
+                )
 
         guild = interaction.guild
         if guild is None:
             await interaction.followup.send(embed=embed)
             return
 
-        blue_vc = guild.get_channel(1463801385777627241)  # Replace with actual Blue VC ID
-        red_vc = guild.get_channel(1462644484985716909)  # Replace with actual Red VC ID
+        blue_vc = guild.get_channel(1463801385777627241)
+        red_vc = guild.get_channel(1462644484985716909)
 
         moved_count = 0
         if blue_vc and red_vc:

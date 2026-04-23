@@ -7,6 +7,64 @@ class Help(commands.Cog):
         self.bot = bot
 
     @staticmethod
+    def _customs_setup_embed() -> Embed:
+        embed = Embed(
+            title="Customs Setup Guide",
+            description="Use this flow to start an inhouse/customs game from scratch.",
+            color=0xE67E22,
+        )
+
+        embed.add_field(
+            name="1) Players Join Lobby",
+            value=(
+                "Run `/join` to enter the lobby.\n"
+                "Use `/lobby` any time to view current players.\n"
+                "Use `/leave` to leave the lobby."
+            ),
+            inline=False,
+        )
+
+        embed.add_field(
+            name="2) Optional Account + MMR Setup",
+            value=(
+                "Use `/linkriot riot_id:gameName#tagLine` to link Riot account.\n"
+                "Use `/setmmr user:@player mmr:number` if you need manual MMR adjustments."
+            ),
+            inline=False,
+        )
+
+        embed.add_field(
+            name="3) Build Teams",
+            value=(
+                "Run `/teams` to generate balanced Blue/Red sides.\n"
+                "Optional: `/teams team_count:3` for 3-team mode when supported."
+            ),
+            inline=False,
+        )
+
+        embed.add_field(
+            name="4) Ready Check",
+            value=(
+                "Run `/readycheck` to confirm players are ready.\n"
+                "Use `/readystatus` to check progress.\n"
+                "Use `/endreadycheck` to cancel if needed."
+            ),
+            inline=False,
+        )
+
+        embed.add_field(
+            name="5) Move Players + Start",
+            value=(
+                "Run `/readymove` after everyone is ready to move teams into Blue/Red voice channels.\n"
+                "If you want a fresh restart, run `/clearlobby` and begin again."
+            ),
+            inline=False,
+        )
+
+        embed.set_footer(text="Tip: /help topic:commands shows every available command.")
+        return embed
+
+    @staticmethod
     def _format_commands(commands_list: list[app_commands.Command]) -> list[str]:
         if not commands_list:
             return ["None"]
@@ -33,8 +91,19 @@ class Help(commands.Cog):
 
         return chunks
 
-    @app_commands.command(name="help", description="Show all available commands")
-    async def help(self, interaction: Interaction) -> None:
+    @app_commands.command(name="help", description="Show commands or a customs setup guide")
+    @app_commands.describe(topic="Pick a help topic")
+    @app_commands.choices(
+        topic=[
+            app_commands.Choice(name="commands", value="commands"),
+            app_commands.Choice(name="customs_setup", value="customs_setup"),
+        ]
+    )
+    async def help(self, interaction: Interaction, topic: str = "commands") -> None:
+        if topic == "customs_setup":
+            await interaction.response.send_message(embed=self._customs_setup_embed(), ephemeral=True)
+            return
+
         commands_list = [
             command
             for command in self.bot.tree.walk_commands()

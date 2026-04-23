@@ -39,7 +39,13 @@ class LeagueBot(commands.Bot):
             and (path / "commands.py").exists()
         ]
 
-        return command_extensions + feature_extensions
+        fun_extensions = [
+            f"apps.bot.fun.{path.stem}"
+            for path in sorted((base_dir / "fun").glob("*.py"))
+            if not path.stem.startswith("__")
+        ]
+
+        return command_extensions + feature_extensions + fun_extensions
 
     async def setup_hook(self) -> None:
         for ext in self.initial_extensions:
@@ -59,4 +65,6 @@ class LeagueBot(commands.Bot):
             type=discord.ActivityType.competing,
             name="balanced 5v5s"
             )
+        await self.channel.send("Bot is ready!")
         await self.change_presence(status=discord.Status.online, activity=activity)
+        

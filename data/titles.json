@@ -2,9 +2,12 @@
   "players": {
     "444188728500551690": {
       "owned": [
-        "the_differ"
+        "the_goon_king",
+        "bank_lord",
+        "ionia_soldier"
       ],
-      "equipped": "the_differ"
+      "equipped": "the_goon_king",
+      "custom_title": null
     }
   }
 }

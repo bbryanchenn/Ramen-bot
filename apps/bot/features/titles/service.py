@@ -41,6 +41,7 @@ def ensure_user(state: dict, user_id: int) -> None:
         state["players"][key] = {
             "owned": [],
             "equipped": None,
+            "custom_title": None,
         }
 
 
@@ -113,6 +114,60 @@ def get_equipped_title_name(user_id: int) -> str | None:
     key = equipped_title(user_id)
     if not key:
         return None
+    if key == "custom":
+        state = load_titles()
+        ensure_user(state, user_id)
+        return state["players"][str(user_id)].get("custom_title")
     if key not in TITLE_CATALOG:
         return None
     return TITLE_CATALOG[key]["name"]
+
+
+def buy_custom_title(user_id: int, custom_text: str) -> tuple[bool, str]:
+    normalized = custom_text.strip()
+    if not normalized or len(normalized) > 50:
+        return False, "Custom title must be 1-50 characters."
+
+    normalized_for_check = " ".join(normalized.split())
+    if normalized_for_check.casefold() == "the goon king":
+        return False, "nice try"
+
+    state = load_titles()
+    ensure_user(state, user_id)
+
+    from apps.bot.features.betting.service import load_bets, save_bets, get_balance, add_balance
+
+    bets_state = load_bets()
+    balance = get_balance(bets_state, user_id)
+    price = TITLE_CATALOG["custom_title"]["price"]
+    player = state["players"][str(user_id)]
+    already_owns = player["custom_title"] is not None
+
+    if not already_owns:
+        if balance < price:
+            return False, f"You need {price} coins."
+        add_balance(bets_state, user_id, -price)
+        save_bets(bets_state)
+
+    player["custom_title"] = normalized
+    player["equipped"] = "custom"
+
+    save_titles(state)
+
+    if already_owns:
+        return True, f"Updated custom title: **{normalized}**"
+    else:
+        return True, f"Created custom title: **{normalized}** for {price} coins!"
+
+def equip_custom_title(user_id: int, custom_text: str) -> tuple[bool, str]:
+    state = load_titles()
+    ensure_user(state, user_id)
+    player = state["players"][str(user_id)]
+
+    if player["custom_title"] is None:
+        return False, "You must buy a custom title first."
+
+    player["custom_title"] = custom_text
+    player["equipped"] = "custom"
+    save_titles(state)
+    return True, f"Updated custom title: **{custom_text}**"

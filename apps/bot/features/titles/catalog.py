@@ -1,17 +1,22 @@
 TITLE_CATALOG = {
-    "high_roller": {
-        "name": "High Roller",
+    "ionia_soldier": {
+        "name": "Ionia Soldier",
         "price": 1000,
         "description": "Clean flex for people with actual coins."
     },
     "bank_lord": {
-        "name": "Bank Lord",
+        "name": "Piltover Banker",
         "price": 10000,
         "description": "You are no longer broke."
     },
-    "the_differ": {
-        "name": "The Differ",
+    "custom_title": {
+        "name": "Custom Title",
+        "price": 75000,
+        "description": "A title of your own design!"
+    },
+    "the_goon_king": {
+        "name": "The Goon King",
         "price": 100000,
-        "description": "The market moves when you breathe."
+        "description": "Only the king of goons can afford this."
     },
 }

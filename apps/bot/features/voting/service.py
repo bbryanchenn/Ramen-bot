@@ -112,6 +112,16 @@ def tally_votes() -> dict | None:
     state["active"] = None
     save_votes(state)
 
+    try:
+        from apps.bot.features.history.service import load_history, save_history
+        history = load_history()
+        if history["matches"]:
+            history["matches"][-1]["mvp"] = mvp_winner
+            history["matches"][-1]["diff"] = diff_winner
+            save_history(history)
+    except Exception:
+        pass
+
     return {
         "mvp_counts": mvp_counts,
         "diff_counts": diff_counts,

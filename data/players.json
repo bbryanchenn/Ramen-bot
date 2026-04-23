@@ -1,7 +1,7 @@
 {
   "444188728500551690": {
     "id": 444188728500551690,
-    "name": "NING NING",
+    "name": "NINGNING",
     "roles": [
       "JUNGLE"
     ],
@@ -39,7 +39,7 @@
       "losses": 0
     },
     "manual_rank": true,
-    "in_lobby": true
+    "in_lobby": false
   },
   "514558534273335303": {
     "id": 514558534273335303,
@@ -60,7 +60,7 @@
       "losses": 0
     },
     "manual_rank": true,
-    "in_lobby": true
+    "in_lobby": false
   },
   "867754044843098143": {
     "id": 867754044843098143,
@@ -69,18 +69,18 @@
       "TOP"
     ],
     "mmr": 875,
-    "riot_id": "Iuno#Baka",
-    "puuid": "ai1iM0FbZmifSBUDLV26zwyl7v2sARHJE2fDYpqgG9PIkSca74Ud7RKZ5gstnAT0l4iAykbFIe45hA",
+    "riot_id": "",
+    "puuid": "",
     "summoner_id": null,
     "ranked_entry": {
       "queueType": "MANUAL",
-      "tier": "MASTER",
-      "rank": "I",
+      "tier": "",
+      "rank": "",
       "leaguePoints": 0,
       "wins": 0,
       "losses": 0
     },
     "manual_rank": true,
-    "in_lobby": true
+    "in_lobby": false
   }
 }

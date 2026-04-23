@@ -63,6 +63,42 @@ class Betting(commands.Cog):
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
+    @app_commands.command(name="baltop", description="Show the top 10 richest users")
+    async def baltop(self, interaction: Interaction) -> None:
+        state = load_bets()
+        balances = state.get("balances", {})
+
+        top_entries: list[tuple[int, int]] = []
+        for user_id_str, amount in balances.items():
+            try:
+                user_id = int(user_id_str)
+                coins = int(amount)
+            except (TypeError, ValueError):
+                continue
+            top_entries.append((user_id, coins))
+
+        if not top_entries:
+            await interaction.response.send_message("No balances found yet.", ephemeral=False)
+            return
+
+        top_entries.sort(key=lambda entry: entry[1], reverse=True)
+        top_10 = top_entries[:10]
+
+        guild = interaction.guild
+        lines = [
+            f"**{idx}.** {self._display_name(guild, user_id)} - **{coins}** coins"
+            for idx, (user_id, coins) in enumerate(top_10, start=1)
+        ]
+
+        embed = discord.Embed(
+            title="🏆 Coin Leaderboard",
+            description="\n".join(lines),
+            color=discord.Color.gold(),
+        )
+        embed.set_footer(text=f"Showing top {len(top_10)} users")
+
+        await interaction.response.send_message(embed=embed)
+
     @app_commands.command(name="bet", description="Bet on blue or red")
     @app_commands.describe(team="blue or red", amount="How much to bet")
     async def bet(self, interaction: Interaction, team: str, amount: int) -> None:
@@ -210,6 +246,25 @@ class Betting(commands.Cog):
             salt_value = 0
 
         result = settle_match(state, team, salt_value)
+        try:
+            from apps.bot.features.history.service import add_match
+            from apps.bot.features.voting.service import get_active_vote
+            from apps.bot.features.events.service import get_event
+
+            current_match = state.get("current_match", {})
+            event = get_event()
+
+            add_match({
+                "winner": team,
+                "salt": salt_value,
+                "blue_team": current_match.get("blue_team", []),
+                "red_team": current_match.get("red_team", []),
+                "mvp": None,
+                "diff": None,
+                "event": event["type"] if event else None,
+            })
+        except Exception:
+            pass
         save_bets(state)
 
         guild = interaction.guild
@@ -367,6 +422,28 @@ class Betting(commands.Cog):
         embed.add_field(name="New Balance", value=str(new_balance), inline=True)
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
+
+    @app_commands.command(name="givecoins", description="Admin command to give coins to a user")
+    @app_commands.describe(user="The user to give coins to", amount="How many coins to give")
+    async def givecoins(self, interaction: Interaction, user: discord.User, amount: int
+    ) -> None:
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
+            return
+
+        state = load_bets()
+        ensure_user(state, user.id)
+        new_balance = add_balance(state, user.id, amount)
+        save_bets(state)
+
+        embed = discord.Embed(
+            title="💸 Coins Given",
+            description=f"Gave **{amount}** coins to {user.mention}.",
+            color=discord.Color.green(),
+        )
+        embed.add_field(name="New Balance", value=str(new_balance), inline=True)
+
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:

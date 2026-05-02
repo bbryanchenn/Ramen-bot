@@ -1,4 +1,5 @@
 import discord
+from typing import Literal
 from discord import Interaction, app_commands
 from discord.ext import commands
 from apps.bot.utils.storage import load_players, save_players
@@ -37,16 +38,38 @@ class Lobby(commands.Cog):
         self.players[member.id] = player
         return player
 
-    @app_commands.command(name="join", description="Join the current inhouse lobby")
-    async def join(self, interaction: Interaction) -> None:
+    @app_commands.command(name="join", description="Join the current inhouse lobby (optionally pick blue/red)")
+    @app_commands.describe(side="Optional team side: blue or red")
+    async def join(self, interaction: Interaction, side: Literal["blue", "red"] | None = None) -> None:
         member = interaction.user
         player = self._ensure_lobby_player(interaction)
 
+        side_label = None
+        side = side.lower().strip() if side else None
+        if side is not None and side not in ("blue", "red"):
+            await interaction.response.send_message("Side must be `blue` or `red`.", ephemeral=True)
+            return
+
+        if side is not None:
+            state = load_bets()
+            if bets_locked(state):
+                await interaction.response.send_message(
+                    "Match is locked. Cannot change teams.",
+                    ephemeral=True,
+                )
+                return
+
+            join_side(state, member.id, side)
+            save_bets(state)
+            side_label = side.title()
+
         save_players(self.players)
 
-        await interaction.response.send_message(
-            f"{member.mention} joined the lobby\nRoles: {', '.join(player.get('roles', []))}"
-        )
+        msg = f"{member.mention} joined the lobby\nRoles: {', '.join(player.get('roles', []))}"
+        if side_label:
+            msg += f"\nTeam: **{side_label}**"
+
+        await interaction.response.send_message(msg)
 
     @app_commands.command(name="leave", description="Leave the current inhouse lobby")
     async def leave(self, interaction: Interaction) -> None:

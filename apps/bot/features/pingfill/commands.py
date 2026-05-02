@@ -9,7 +9,7 @@ class PingFill(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    @app_commands.command(name="pingfill", description="DM online Fill players if lobby is short")
+    @app_commands.command(name="pingfill", description="DM online Fill + Clasher players not in voice if lobby is short")
     @app_commands.describe(needed="Override how many more players are needed")
     async def pingfill(self, interaction: Interaction, needed: int | None = None) -> None:
         guild = interaction.guild
@@ -43,7 +43,7 @@ class PingFill(commands.Cog):
 
         if not candidates:
             await interaction.response.send_message(
-                f"No online Fill players found. Need {needed} more.",
+                f"No eligible players found (must be online, Fill + Clasher, and not in voice). Need {needed} more.",
                 ephemeral=True,
             )
             return

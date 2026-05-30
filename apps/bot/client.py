@@ -19,7 +19,7 @@ class LeagueBot(commands.Bot):
             help_command=None,
         )
 
-        self.guild_id = int(get_env("DISCORD_GUILD_ID", "0") or "0")
+        self.guild_id = [int(x.strip()) for x in get_env("DISCORD_GUILD_ID", "").split(",") if x.strip()]
         self.initial_extensions = self._discover_extensions()
 
     def _discover_extensions(self) -> list[str]:
@@ -52,9 +52,10 @@ class LeagueBot(commands.Bot):
             await self.load_extension(ext)
 
         if self.guild_id:
-            guild = discord.Object(id=self.guild_id)
-            self.tree.copy_global_to(guild=guild)
-            await self.tree.sync(guild=guild)
+            for guild_id in self.guild_id:
+                guild = discord.Object(id=guild_id)
+                self.tree.copy_global_to(guild=guild)
+                await self.tree.sync(guild=guild)
         else:
             await self.tree.sync()
 

@@ -108,6 +108,50 @@ async def get_ranked_entries_by_summoner_id(summoner_id: str) -> tuple[list[dict
     return payload, None
 
 
+async def get_match_ids_by_puuid(
+    puuid: str,
+    count: int = 5,
+    queue: int | None = None,
+) -> tuple[list[str] | None, str | None]:
+    _, region, _ = _get_env()
+    safe_puuid = quote(puuid.strip(), safe="")
+    safe_count = max(1, min(int(count), 100))
+    url = (
+        f"https://{region}.api.riotgames.com/lol/match/v5/matches/by-puuid/"
+        f"{safe_puuid}/ids?count={safe_count}"
+    )
+    if queue is not None:
+        url += f"&queue={int(queue)}"
+
+    payload, error = await _request_json("get_match_ids_by_puuid", url)
+    if error:
+        if error == "not_found":
+            return [], None
+        return None, error
+
+    if not isinstance(payload, list):
+        return None, "Match-id lookup returned an unexpected payload."
+
+    return [str(x) for x in payload], None
+
+
+async def get_match_by_id(match_id: str) -> tuple[dict | None, str | None]:
+    _, region, _ = _get_env()
+    safe_id = quote(match_id.strip(), safe="")
+    url = f"https://{region}.api.riotgames.com/lol/match/v5/matches/{safe_id}"
+
+    payload, error = await _request_json("get_match_by_id", url)
+    if error:
+        if error == "not_found":
+            return None, "Riot has no record of that match."
+        return None, error
+
+    if not isinstance(payload, dict):
+        return None, "Match lookup returned an unexpected payload."
+
+    return payload, None
+
+
 async def fetch_rank_profile(game_name: str, tag_line: str) -> dict:
     puuid, error = await get_puuid(game_name, tag_line)
     if error:

@@ -61,6 +61,15 @@ class Help(commands.Cog):
             inline=False,
         )
 
+        embed.add_field(
+            name="6) Optional Custom STN Vote",
+            value=(
+                "Use `/customstn` in the read-only customs announcement channel to post a vote.\n"
+                "For testing, it currently creates the scheduled event after 1 yes vote."
+            ),
+            inline=False,
+        )
+
         embed.set_footer(text="Tip: /help topic:commands shows every available command.")
         return embed
 

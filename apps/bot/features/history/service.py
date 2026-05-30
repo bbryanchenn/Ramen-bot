@@ -41,6 +41,27 @@ def add_match(match_data: dict) -> int:
     return match_id
 
 
+def update_match(match_id: int, patch: dict) -> bool:
+    state = load_history()
+    for row in state["matches"]:
+        if int(row.get("id", -1)) == int(match_id):
+            row.update(patch)
+            save_history(state)
+            return True
+    return False
+
+
+def latest_match_id_missing_recap() -> int | None:
+    state = load_history()
+    matches = state.get("matches", [])
+    if not matches:
+        return None
+    latest = matches[-1]
+    if latest.get("mvp") is None and latest.get("diff") is None and not latest.get("riot_match_id"):
+        return int(latest.get("id", -1))
+    return None
+
+
 def latest_matches(limit: int = 10) -> list[dict]:
     state = load_history()
     return list(reversed(state["matches"][-limit:]))

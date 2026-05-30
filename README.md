@@ -10,6 +10,7 @@ It supports lobby management, team generation, Riot linking, ready checks, and e
 - Automatic team generation using role + MMR balancing
 - Riot account linking and ranked profile lookup
 - Ready check + optional auto-move into Blue/Red voice channels
+- Admin-led `/customstn` vote flow that can auto-create a scheduled customs event
 - Optional feature modules (betting, bounties, events, titles, and more)
 
 ## Requirements
@@ -70,6 +71,7 @@ Notes:
 
 Use these slash commands in order:
 
+0. Optional admin step: `/customstn` to post a yes-vote customs event in a read-only announcement channel
 1. `/join` for all players entering lobby
 2. `/lobby` to confirm who is in
 3. Optional: `/linkriot riot_id:gameName#tagLine`

@@ -1,1 +1,29 @@
-{}
+{
+  "matches": [
+    {
+      "id": 1,
+      "winner": "blue",
+      "salt": 24,
+      "blue_team": [
+        444188728500551690
+      ],
+      "red_team": [],
+      "mvp": null,
+      "diff": null,
+      "event": null
+    },
+    {
+      "id": 2,
+      "winner": "red",
+      "salt": 24,
+      "blue_team": [
+        444188728500551690
+      ],
+      "red_team": [],
+      "mvp": null,
+      "diff": null,
+      "event": null
+    }
+  ],
+  "next_id": 3
+}

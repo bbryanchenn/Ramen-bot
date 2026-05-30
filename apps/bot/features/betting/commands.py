@@ -265,6 +265,22 @@ class Betting(commands.Cog):
             })
         except Exception:
             pass
+
+        try:
+            from apps.bot.features.recap.commands import schedule_auto_recap
+
+            channel = interaction.channel
+            if channel is not None:
+                schedule_auto_recap(
+                    self.bot,
+                    channel.id,
+                    list(current_match.get("blue_team", []) or []),
+                    list(current_match.get("red_team", []) or []),
+                    team,
+                )
+        except Exception:
+            pass
+
         save_bets(state)
 
         guild = interaction.guild
